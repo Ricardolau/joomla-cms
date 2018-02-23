@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  mod_stats_admin
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -83,6 +83,7 @@ class ModStatsHelper
 			$query->select('COUNT(id) AS count_users')
 				->from('#__users');
 			$db->setQuery($query);
+
 			try
 			{
 				$users = $db->loadResult();
@@ -97,6 +98,7 @@ class ModStatsHelper
 				->from('#__content')
 				->where('state = 1');
 			$db->setQuery($query);
+
 			try
 			{
 				$items = $db->loadResult();
@@ -122,33 +124,6 @@ class ModStatsHelper
 				$rows[$i]->icon  = 'file';
 				$rows[$i]->data  = $items;
 				$i++;
-			}
-
-			if (JComponentHelper::isInstalled('com_weblinks'))
-			{
-				$query->clear()
-					->select('COUNT(id) AS count_links')
-					->from('#__weblinks')
-					->where('state = 1');
-				$db->setQuery($query);
-
-				try
-				{
-					$links = $db->loadResult();
-				}
-				catch (RuntimeException $e)
-				{
-					$links = false;
-				}
-
-				if ($links)
-				{
-					$rows[$i]        = new stdClass;
-					$rows[$i]->title = JText::_('MOD_STATS_WEBLINKS');
-					$rows[$i]->icon  = 'out-2';
-					$rows[$i]->data  = $links;
-					$i++;
-				}
 			}
 		}
 

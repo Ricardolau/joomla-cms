@@ -3,7 +3,7 @@
  * @package     Joomla.Installation
  * @subpackage  Model
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -136,9 +136,7 @@ class InstallationModelSetup extends JModelBase
 		unset($return['admin_password2']);
 
 		// Store the options in the session.
-		$vars = $this->storeOptions($return);
-
-		return $vars;
+		return $this->storeOptions($return);
 	}
 
 	/**
@@ -272,15 +270,15 @@ class InstallationModelSetup extends JModelBase
 			// Check for default MB language.
 			$option = new stdClass;
 			$option->label  = JText::_('INSTL_MB_LANGUAGE_IS_DEFAULT');
-			$option->state  = (strtolower(ini_get('mbstring.language')) == 'neutral');
-			$option->notice = ($option->state) ? null : JText::_('INSTL_NOTICEMBLANGNOTDEFAULT');
+			$option->state  = strtolower(ini_get('mbstring.language')) === 'neutral';
+			$option->notice = $option->state ? null : JText::_('INSTL_NOTICEMBLANGNOTDEFAULT');
 			$options[] = $option;
 
 			// Check for MB function overload.
 			$option = new stdClass;
 			$option->label  = JText::_('INSTL_MB_STRING_OVERLOAD_OFF');
-			$option->state  = (ini_get('mbstring.func_overload') == 0);
-			$option->notice = ($option->state) ? null : JText::_('INSTL_NOTICEMBSTRINGOVERLOAD');
+			$option->state  = ini_get('mbstring.func_overload') == 0;
+			$option->notice = $option->state ? null : JText::_('INSTL_NOTICEMBSTRINGOVERLOAD');
 			$options[] = $option;
 		}
 
@@ -298,13 +296,6 @@ class InstallationModelSetup extends JModelBase
 		$option->notice = null;
 		$options[] = $option;
 
-		// Check for mcrypt support
-		$option = new stdClass;
-		$option->label  = JText::_('INSTL_MCRYPT_SUPPORT_AVAILABLE');
-		$option->state  = is_callable('mcrypt_encrypt');
-		$option->notice = $option->state ? null : JText::_('INSTL_NOTICEMCRYPTNOTAVAILABLE');
-		$options[] = $option;
-
 		// Check for configuration file writable.
 		$writable = (is_writable(JPATH_CONFIGURATION . '/configuration.php')
 			|| (!file_exists(JPATH_CONFIGURATION . '/configuration.php') && is_writable(JPATH_ROOT)));
@@ -312,7 +303,7 @@ class InstallationModelSetup extends JModelBase
 		$option = new stdClass;
 		$option->label  = JText::sprintf('INSTL_WRITABLE', 'configuration.php');
 		$option->state  = $writable;
-		$option->notice = ($option->state) ? null : JText::_('INSTL_NOTICEYOUCANSTILLINSTALL');
+		$option->notice = $option->state ? null : JText::_('INSTL_NOTICEYOUCANSTILLINSTALL');
 		$options[] = $option;
 
 		return $options;
@@ -332,7 +323,7 @@ class InstallationModelSetup extends JModelBase
 
 		foreach ($options as $option)
 		{
-			if (is_null($option->notice))
+			if ($option->notice === null)
 			{
 				$result = ($result && $option->state);
 			}
